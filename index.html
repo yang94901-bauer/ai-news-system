@@ -49,6 +49,20 @@
       }
       .quick-link:hover { border-color: var(--accent); background: rgba(56, 98, 172, 0.32); transform: translateY(-1px); }
       .quick-link:active { transform: scale(.98); }
+      .action-row { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .55rem; }
+      .action-btn {
+        border: 1px solid var(--line);
+        background: rgba(36, 49, 75, 0.45);
+        color: var(--text);
+        border-radius: 10px;
+        padding: .4rem .62rem;
+        text-decoration: none;
+        font-size: .8rem;
+        transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+        cursor: pointer;
+      }
+      .action-btn:hover { border-color: var(--accent); background: rgba(56, 98, 172, 0.32); box-shadow: 0 8px 24px rgba(12, 38, 72, .35); }
+      .action-btn:active { transform: scale(.98); }
       select, input {
         border: 1px solid var(--line);
         background: rgba(36, 49, 75, 0.55);
@@ -143,8 +157,8 @@
       const mockData = {
         brief: [
           {title:"OpenAI 推出企业级 Agent 执行框架", happened:"发布可审计多 Agent 流程模板，支持审批与责任追踪。", important:"降低企业部署复杂度，推动 Agent 从 Demo 走向生产。", biz:"咨询、交付、流程自动化市场加速。", opp:"可做行业 Agent OS、评估与治理工具。", risk:"合规与错误执行风险仍需人工兜底。", source:"OpenAI", time:"2026-05-08 08:30", type:"赛道", heat:95, track:"AI Agent", age:"24h"},
-          {title:"AI Coding 工具席位战升温", happened:"多家编程助手发布团队版并强化代码库检索。", important:"研发效率成为中型企业降本核心抓手。", biz:"团队订阅 ARPU 提升，进入企业软件采购池。", opp:"围绕安全、审计、迁移的插件机会明确。", risk:"同质化严重，获客成本上升。", source:"GitHub + 产品公告", time:"2026-05-08 09:15", type:"工具", heat:91, track:"AI Coding", age:"24h"},
-          {title:"AI 视频赛道连续出现高额融资", happened:"两家生成式视频公司披露新一轮融资。", important:"资本继续押注内容生产基础设施。", biz:"广告、电商素材、教育视频自动化需求释放。", opp:"可切入垂类模板与后期工作流 SaaS。", risk:"算力成本与版权合规压力高。", source:"TechCrunch / 公司公告", time:"2026-05-08 10:05", type:"融资", heat:89, track:"AI 视频", age:"24h"}
+          {title:"AI Coding 工具席位战升温", happened:"多家编程助手发布团队版并强化代码库检索。", important:"研发效率成为中型企业降本核心抓手。", biz:"团队订阅 ARPU 提升，进入企业软件采购池。", opp:"围绕安全、审计、迁移的插件机会明确。", risk:"同质化严重，获客成本上升。", source:"GitHub Trending", time:"2026-05-08 09:15", type:"工具", heat:91, track:"AI Coding", age:"24h"},
+          {title:"AI 视频赛道连续出现高额融资", happened:"两家生成式视频公司披露新一轮融资。", important:"资本继续押注内容生产基础设施。", biz:"广告、电商素材、教育视频自动化需求释放。", opp:"可切入垂类模板与后期工作流 SaaS。", risk:"算力成本与版权合规压力高。", source:"TechCrunch AI", time:"2026-05-08 10:05", type:"融资", heat:89, track:"AI 视频", age:"24h"}
         ],
         radar: [
           {track:"AI Agent", heat:95, trend:"↑ 强增长", opportunity:"企业流程自动化与垂直执行体", level:"S"},
@@ -155,10 +169,12 @@
           {track:"AI 企业服务", heat:86, trend:"↑ 稳健增长", opportunity:"Agent 运维平台、质量监控", level:"A"}
         ],
         tools: [
-          {name:"Cursor", track:"AI Coding", heat:94, growth:"+23%", use:"工程团队", signal:"团队版扩张"},
-          {name:"Perplexity", track:"AI 搜索", heat:88, growth:"+16%", use:"研究/投研", signal:"信息效率提升"},
-          {name:"Runway", track:"AI 视频", heat:86, growth:"+20%", use:"内容团队", signal:"视频生产链完善"},
-          {name:"Harvey", track:"AI 企业服务", heat:82, growth:"+12%", use:"法律/专业服务", signal:"垂直化深化"}
+          {name:"Cursor", track:"AI Coding", heat:94, growth:"+23%", use:"工程团队", signal:"团队版扩张", site:"https://cursor.com/"},
+          {name:"Claude", track:"AI Agent", heat:91, growth:"+19%", use:"产品/运营", signal:"企业智能体协作升温", site:"https://www.anthropic.com/claude"},
+          {name:"Perplexity", track:"AI 搜索", heat:88, growth:"+16%", use:"研究/投研", signal:"信息效率提升", site:"https://www.perplexity.ai/"},
+          {name:"Runway", track:"AI 视频", heat:86, growth:"+20%", use:"内容团队", signal:"视频生产链完善", site:"https://runwayml.com/"},
+          {name:"Midjourney", track:"AI 视频", heat:85, growth:"+17%", use:"设计团队", signal:"创意生产提效明显", site:"https://www.midjourney.com/"},
+          {name:"Harvey", track:"AI 企业服务", heat:82, growth:"+12%", use:"法律/专业服务", signal:"垂直化深化", site:"https://www.harvey.ai/"}
         ],
         funding: {
           top3:[
@@ -188,7 +204,7 @@
 
       function renderBrief() {
         const list = applyFilters(mockData.brief).slice(0,3);
-        byId("briefGrid").innerHTML = list.length ? list.map((i, idx) => `<article class="card interactive ${state.expandedBrief === idx ? "expanded" : ""}" data-brief-index="${idx}" role="button" tabindex="0" aria-expanded="${state.expandedBrief === idx}"><span class="tag">${i.track}</span><span class="tag">热度 ${i.heat}</span><h3 class="title">${i.title}</h3><div class="meta">${i.source} · ${i.time}</div><div class="details"><div><p class="impact"><b>发生了什么：</b>${i.happened}</p><p class="impact"><b>为什么重要：</b>${i.important}</p><p class="impact"><b>商业影响：</b>${i.biz}</p><p class="impact"><b>创业机会：</b>${i.opp}</p><p class="impact"><b>风险提示：</b>${i.risk}</p><p class="impact"><b>来源链接：</b><a class="quick-link" href="#" onclick="event.preventDefault()">查看来源（${i.source}）</a></p></div></div></article>`).join("") : '<div class="empty">暂无匹配情报</div>';
+        byId("briefGrid").innerHTML = list.length ? list.map((i, idx) => `<article class="card interactive ${state.expandedBrief === idx ? "expanded" : ""}" data-brief-index="${idx}" role="button" tabindex="0" aria-expanded="${state.expandedBrief === idx}"><span class="tag">${i.track}</span><span class="tag">热度 ${i.heat}</span><h3 class="title">${i.title}</h3><div class="meta">${i.source} · ${i.time}</div><div class="details"><div><p class="impact"><b>发生了什么：</b>${i.happened}</p><p class="impact"><b>为什么重要：</b>${i.important}</p><p class="impact"><b>商业影响：</b>${i.biz}</p><p class="impact"><b>创业机会：</b>${i.opp}</p><p class="impact"><b>风险提示：</b>${i.risk}</p><div class="action-row"><button class="action-btn brief-source-btn" data-brief-index="${idx}" type="button">查看来源</button><button class="action-btn brief-read-btn" data-brief-index="${idx}" type="button">阅读全文</button></div></div></div></article>`).join("") : '<div class="empty">暂无匹配情报</div>';
       }
 
       function renderRadar() {
@@ -197,13 +213,13 @@
 
       function renderTools() {
         const items = mockData.tools.filter(t => (state.type === "全部" || t.track === state.type) && (state.time === "全部" || t.age === state.time) && (state.heat === "全部" || t.heat >= Number(state.heat)) && (`${t.name}${t.track}${t.use}${t.signal}`.toLowerCase().includes(state.q.toLowerCase())));
-        byId("toolGrid").innerHTML = items.length ? items.map((t, idx) => `<article class="card interactive" data-tool-index="${idx}" role="button" tabindex="0"><h3 class="title">${t.name}</h3><div class="meta">赛道：${t.track} ｜ 热度：${t.heat}</div><p class="impact">增长：${t.growth} ｜ 适用人群：${t.use}</p><p class="impact">信号：${t.signal}</p></article>`).join("") : '<div class="empty">暂无匹配情报</div>';
+        byId("toolGrid").innerHTML = items.length ? items.map((t, idx) => `<article class="card interactive" data-tool-index="${idx}" role="button" tabindex="0"><h3 class="title">${t.name}</h3><div class="meta">赛道：${t.track} ｜ 热度：${t.heat}</div><p class="impact">增长：${t.growth} ｜ 适用人群：${t.use}</p><p class="impact">信号：${t.signal}</p><div class="action-row"><button class="action-btn tool-site-btn" data-tool-index="${idx}" type="button">访问官网</button></div></article>`).join("") : '<div class="empty">暂无匹配情报</div>';
         return items;
       }
 
       function renderFunding() {
         const f = mockData.funding; const events = f.events.filter(e => (state.type === "全部" || e.track === state.type) && (state.time === "全部" || e.age === state.time) && (state.heat === "全部" || e.heat >= Number(state.heat)) && (`${e.company}${e.track}${e.round}${e.investors}`.toLowerCase().includes(state.q.toLowerCase())));
-        byId("fundingTop").innerHTML = events.length ? `<div class="card"><h3 class="title">今日融资事件</h3><ol>${events.map((e, idx) => `<li class="impact"><button class="quick-link funding-link" data-funding-index="${idx}">${e.company}｜${e.round}｜${e.amount}</button></li>`).join("")}</ol></div><div class="card" style="margin-top:.7rem;"><h3 class="title">本周融资趋势</h3><p class="impact">${f.weekly}</p></div>` : '<div class="empty">暂无匹配情报</div>';
+        byId("fundingTop").innerHTML = events.length ? `<div class="card"><h3 class="title">今日融资事件</h3><ol>${events.map((e, idx) => `<li class="impact"><div>${e.company}｜${e.round}｜${e.amount}</div><div class="action-row"><button class="action-btn funding-source-btn" data-funding-index="${idx}" type="button">查看来源</button><button class="action-btn funding-read-btn" data-funding-index="${idx}" type="button">阅读全文</button></div></li>`).join("")}</ol></div><div class="card" style="margin-top:.7rem;"><h3 class="title">本周融资趋势</h3><p class="impact">${f.weekly}</p></div>` : '<div class="empty">暂无匹配情报</div>';
         byId("fundingInsights").innerHTML = `<div class="card"><h3 class="title">高潜赛道</h3><p class="impact">${f.lanes}</p><h3 class="title">投资人关注信号</h3><p class="impact">${f.investor}</p><h3 class="title">创业者机会分析</h3><p class="impact">${f.founder}</p></div>`;
         return events;
       }
@@ -229,9 +245,17 @@
           const open = () => openModal(`${t.name} 工具详情`, [`工具简介：${t.signal}`, `适合人群：${t.use}`, `核心功能：AI 辅助能力 + 工作流提效`, `替代品：同赛道其他 ${t.track} 工具`, `官网链接：${t.site}`]);
           el.onclick = open; el.onkeydown = (e) => (e.key === "Enter" || e.key === " ") && open();
         });
-        document.querySelectorAll(".funding-link").forEach(el => {
+        document.querySelectorAll(".brief-source-btn, .brief-read-btn").forEach(el => {
+          const item = mockData.brief[Number(el.dataset.briefIndex)];
+          el.onclick = (e) => { e.stopPropagation(); window.open(item.sourceUrl, "_blank", "noopener,noreferrer"); };
+        });
+        document.querySelectorAll(".tool-site-btn").forEach(el => {
+          const t = toolItems[Number(el.dataset.toolIndex)];
+          el.onclick = (e) => { e.stopPropagation(); window.open(t.site, "_blank", "noopener,noreferrer"); };
+        });
+        document.querySelectorAll(".funding-source-btn, .funding-read-btn").forEach(el => {
           const f = fundingItems[Number(el.dataset.fundingIndex)];
-          el.onclick = () => openModal(`${f.company} 融资详情`, [`公司简介：${f.profile}`, `融资金额：${f.amount}`, `轮次：${f.round}`, `投资方：${f.investors}`, `赛道：${f.track}`, `商业意义：${f.business}`, `风险判断：${f.risk}`]);
+          el.onclick = () => window.open(f.sourceUrl, "_blank", "noopener,noreferrer");
         });
       }
       document.querySelectorAll(".quick-link[href^='#']").forEach(a => a.addEventListener("click", (e) => { e.preventDefault(); document.querySelector(a.getAttribute("href"))?.scrollIntoView({behavior:"smooth", block:"start"}); }));
@@ -242,11 +266,25 @@
       byId("timeFilter").addEventListener("change", e => { state.time = e.target.value; render(); });
       byId("heatFilter").addEventListener("change", e => { state.heat = e.target.value; render(); });
 
-      mockData.tools = mockData.tools.map(t => ({...t, site:`https://example.com/${t.name.toLowerCase()}`, age:"7d"}));
+      mockData.brief = mockData.brief.map(i => ({
+        ...i,
+        sourceUrl: ({
+          "OpenAI":"https://openai.com/news/",
+          "Anthropic":"https://www.anthropic.com/news",
+          "GitHub Trending":"https://github.com/trending?spoken_language_code=&since=daily",
+          "Product Hunt":"https://www.producthunt.com/topics/artificial-intelligence",
+          "TechCrunch AI":"https://techcrunch.com/category/artificial-intelligence/",
+          "Y Combinator AI":"https://www.ycombinator.com/companies?tags=Artificial%20Intelligence",
+          "NVIDIA AI":"https://www.nvidia.com/en-us/ai/",
+          "Perplexity":"https://www.perplexity.ai/",
+          "Cursor":"https://cursor.com/"
+        }[i.source]) || "https://techcrunch.com/category/artificial-intelligence/"
+      }));
+      mockData.tools = mockData.tools.map(t => ({...t, age:"7d"}));
       mockData.funding.events = [
-        {company:"视频生成基础模型公司 A", profile:"聚焦营销与内容生产的生成式视频基础设施。", amount:"$85M", round:"B 轮", investors:"North Star / Vision Capital", track:"AI 视频", business:"推动广告与电商素材工业化交付。", risk:"高算力成本与内容版权风险。", heat:89, age:"24h"},
-        {company:"医疗 AI 平台公司 B", profile:"提供临床决策支持与病历结构化产品。", amount:"$42M", round:"战略轮", investors:"MediGrowth / Hospital Ventures", track:"AI 医疗", business:"加速医院场景落地和医疗合规能力建设。", risk:"监管周期长、销售周期重。", heat:84, age:"7d"},
-        {company:"企业 Agent 安全公司 C", profile:"专注 Agent 审计、权限控制与风险拦截。", amount:"$18M", round:"种子扩展轮", investors:"Secure AI Fund", track:"AI 企业服务", business:"补齐企业 Agent 生产环境必需安全层。", risk:"客户教育成本较高。", heat:82, age:"30d"}
+        {company:"视频生成基础模型公司 A", profile:"聚焦营销与内容生产的生成式视频基础设施。", amount:"$85M", round:"B 轮", investors:"North Star / Vision Capital", track:"AI 视频", business:"推动广告与电商素材工业化交付。", risk:"高算力成本与内容版权风险。", heat:89, age:"24h", sourceUrl:"https://techcrunch.com/category/artificial-intelligence/"},
+        {company:"医疗 AI 平台公司 B", profile:"提供临床决策支持与病历结构化产品。", amount:"$42M", round:"战略轮", investors:"MediGrowth / Hospital Ventures", track:"AI 医疗", business:"加速医院场景落地和医疗合规能力建设。", risk:"监管周期长、销售周期重。", heat:84, age:"7d", sourceUrl:"https://www.crunchbase.com/discover/organization.companies/field/organizations/categories/artificial-intelligence"},
+        {company:"企业 Agent 安全公司 C", profile:"专注 Agent 审计、权限控制与风险拦截。", amount:"$18M", round:"种子扩展轮", investors:"Secure AI Fund", track:"AI 企业服务", business:"补齐企业 Agent 生产环境必需安全层。", risk:"客户教育成本较高。", heat:82, age:"30d", sourceUrl:"https://techcrunch.com/category/artificial-intelligence/"}
       ];
       render();
     </script>
