@@ -3,54 +3,367 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI News System</title>
+    <title>AI 与创业情报站 | 今日 AI 情报</title>
     <style>
       :root {
-        color-scheme: light dark;
-        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        --bg: #070b14;
+        --panel: #0f1627;
+        --panel-soft: #121d33;
+        --line: #23304d;
+        --text: #e6edf7;
+        --muted: #90a0bf;
+        --accent: #3ea6ff;
+        --accent-2: #27d3a2;
+        --danger: #f87171;
+        --shadow: 0 16px 36px rgba(2, 8, 23, 0.6);
       }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        background: radial-gradient(circle at top, #1e293b, #020617);
-        color: #e2e8f0;
+        font-family: "Inter", "SF Pro Display", "Segoe UI", sans-serif;
+        background: radial-gradient(circle at 15% -10%, #1e2d4f 0%, transparent 42%),
+          radial-gradient(circle at 100% 0%, #183359 0%, transparent 35%), var(--bg);
+        color: var(--text);
+        line-height: 1.5;
       }
-      main {
-        width: min(720px, 92vw);
-        padding: 2.5rem;
-        border-radius: 16px;
-        background: rgba(15, 23, 42, 0.82);
-        border: 1px solid rgba(148, 163, 184, 0.3);
-        box-shadow: 0 20px 45px rgba(2, 6, 23, 0.45);
+
+      a {
+        color: inherit;
+        text-decoration: none;
       }
-      h1 {
-        margin-top: 0;
-        font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+
+      .container {
+        width: min(1180px, 92vw);
+        margin: 0 auto;
       }
-      p {
-        line-height: 1.7;
-        margin: 0.75rem 0;
+
+      .top-nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(14px);
+        background: rgba(7, 11, 20, 0.78);
+        border-bottom: 1px solid rgba(94, 123, 179, 0.25);
       }
-      .status {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.4rem 0.7rem;
-        border-radius: 999px;
-        background: rgba(34, 197, 94, 0.18);
-        color: #86efac;
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 66px;
+      }
+
+      .brand {
+        font-size: 1.08rem;
         font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .brand span {
+        color: var(--accent);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.2rem;
+        color: var(--muted);
         font-size: 0.95rem;
+      }
+
+      .hero {
+        margin: 1.3rem auto 1.1rem;
+        padding: 1.3rem 1.2rem;
+        border: 1px solid var(--line);
+        background: linear-gradient(145deg, rgba(18, 29, 51, 0.9), rgba(14, 22, 39, 0.95));
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero h1 {
+        margin: 0 0 0.35rem;
+        font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .section-title {
+        margin: 1.3rem 0 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .section-title h2 {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .section-title small {
+        color: var(--muted);
+      }
+
+      .news-grid,
+      .tool-grid,
+      .startup-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 0.9rem;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: linear-gradient(180deg, rgba(18, 29, 51, 0.82), rgba(11, 19, 35, 0.92));
+        box-shadow: var(--shadow);
+        padding: 1rem;
+      }
+
+      .news-card {
+        grid-column: span 4;
+      }
+
+      .news-card h3,
+      .tool-card h3,
+      .startup-card h3 {
+        margin: 0.3rem 0 0.4rem;
+        font-size: 1.02rem;
+      }
+
+      .meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(62, 166, 255, 0.13);
+        color: #8ecbff;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .card p {
+        color: #c5d2e8;
+        margin: 0.55rem 0 0;
+        font-size: 0.92rem;
+      }
+
+      .intel-layout {
+        margin-top: 1.1rem;
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 0.9rem;
+      }
+
+      .intel-list {
+        padding-left: 1rem;
+        margin: 0.75rem 0 0;
+      }
+
+      .intel-list li {
+        margin-bottom: 0.55rem;
+        color: #c4d3eb;
+      }
+
+      .tool-card {
+        grid-column: span 3;
+      }
+
+      .tool-stats {
+        margin-top: 0.65rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      .startup-card {
+        grid-column: span 6;
+      }
+
+      .trend-up {
+        color: var(--accent-2);
+      }
+
+      .trend-down {
+        color: var(--danger);
+      }
+
+      footer {
+        color: var(--muted);
+        font-size: 0.82rem;
+        margin: 1.2rem 0 1.8rem;
+      }
+
+      @media (max-width: 980px) {
+        .news-card,
+        .startup-card {
+          grid-column: span 6;
+        }
+
+        .tool-card {
+          grid-column: span 4;
+        }
+
+        .intel-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .nav-inner {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 0.7rem 0;
+          gap: 0.4rem;
+        }
+
+        .nav-links {
+          flex-wrap: wrap;
+          gap: 0.75rem;
+          font-size: 0.88rem;
+        }
+
+        .news-card,
+        .tool-card,
+        .startup-card {
+          grid-column: span 12;
+        }
+
+        .hero {
+          padding: 1rem;
+        }
       }
     </style>
   </head>
   <body>
-    <main>
-      <h1>AI News System 已成功部署</h1>
-      <p>如果你看到此页面，说明 Vercel 已正确识别并发布了项目首页入口。</p>
-      <p>后续你可以在此基础上接入前端框架或 API 内容。</p>
-      <span class="status">✅ Home Page Online</span>
+    <header class="top-nav">
+      <div class="container nav-inner">
+        <div class="brand"><span>AI</span> Venture Intelligence</div>
+        <nav class="nav-links">
+          <a href="#news">AI 新闻</a>
+          <a href="#tools">热门工具</a>
+          <a href="#startup">创业资讯</a>
+          <a href="#intel">今日 AI 情报</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <h1>今日 AI 与创业情报总览</h1>
+        <p>聚合全球 AI 模型动态、工具热度和创业融资信息，为产品经理、开发者与创始人提供可执行的商业信号。</p>
+      </section>
+
+      <section id="news">
+        <div class="section-title">
+          <h2>AI 新闻卡片</h2>
+          <small>更新时间：2026-05-08</small>
+        </div>
+        <div class="news-grid">
+          <article class="card news-card">
+            <span class="tag">模型发布</span>
+            <h3>OpenAI 发布 GPT-5.3 系列能力升级</h3>
+            <div class="meta">来源：OpenAI Blog · 2026-05-07</div>
+            <p>重点提升代码代理可靠性与多工具协同能力，企业版新增可审计日志与细粒度权限策略。</p>
+          </article>
+          <article class="card news-card">
+            <span class="tag">芯片与算力</span>
+            <h3>NVIDIA Blackwell 云实例进入大规模商用</h3>
+            <div class="meta">来源：NVIDIA GTC Updates · 2026-05-06</div>
+            <p>主流云厂商推出按小时弹性租用，推理成本较上一代下降约 28%，推动 AI 应用毛利改善。</p>
+          </article>
+          <article class="card news-card">
+            <span class="tag">监管动向</span>
+            <h3>欧盟 AI Act 新一轮执行细则公布</h3>
+            <div class="meta">来源：EU Commission · 2026-05-05</div>
+            <p>高风险模型披露要求细化至数据来源与评估流程，跨境 SaaS 团队合规成本将进一步上升。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="tools">
+        <div class="section-title">
+          <h2>今日热门 AI 工具</h2>
+          <small>按产品增长与社区热度排序</small>
+        </div>
+        <div class="tool-grid">
+          <article class="card tool-card">
+            <h3>Cursor Teams</h3>
+            <div class="meta">AI 编程协作</div>
+            <p>多仓库上下文 + 审查建议，成为中型工程团队的代码加速器。</p>
+            <div class="tool-stats"><span>周增长 <b class="trend-up">+31%</b></span><span>评分 4.8</span></div>
+          </article>
+          <article class="card tool-card">
+            <h3>Perplexity Enterprise Pro</h3>
+            <div class="meta">企业检索问答</div>
+            <p>内网文档与互联网信息联合检索，适合投研、法务与咨询场景。</p>
+            <div class="tool-stats"><span>周增长 <b class="trend-up">+24%</b></span><span>评分 4.7</span></div>
+          </article>
+          <article class="card tool-card">
+            <h3>Midjourney V8</h3>
+            <div class="meta">图像生成</div>
+            <p>风格控制与角色一致性提升，广告与电商视觉产出效率显著提高。</p>
+            <div class="tool-stats"><span>周增长 <b class="trend-up">+19%</b></span><span>评分 4.6</span></div>
+          </article>
+          <article class="card tool-card">
+            <h3>Runway Gen-4 Studio</h3>
+            <div class="meta">视频生成</div>
+            <p>支持镜头级编辑与时间线重绘，短视频团队生产周期缩短约 40%。</p>
+            <div class="tool-stats"><span>周增长 <b class="trend-down">-3%</b></span><span>评分 4.5</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="startup">
+        <div class="section-title">
+          <h2>AI 创业资讯</h2>
+          <small>融资、产品与商业化</small>
+        </div>
+        <div class="startup-grid">
+          <article class="card startup-card">
+            <h3>AgentOps 初创公司完成 3200 万美元 A 轮</h3>
+            <div class="meta">赛道：AI 运维基础设施 · 2026-05-08</div>
+            <p>其平台可追踪多代理执行链路与成本，已进入多家金融与电商企业采购名单。</p>
+          </article>
+          <article class="card startup-card">
+            <h3>HealthLM 创业团队获 FDA 快速通道资格</h3>
+            <div class="meta">赛道：医疗 AI · 2026-05-07</div>
+            <p>围绕医学文档生成和临床问答构建 SaaS，预计 Q3 在美国 20 家医院试点上线。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="intel" class="intel-layout">
+        <article class="card">
+          <h2 style="margin: 0">今日 AI 情报</h2>
+          <p style="margin-top: 0.45rem">面向创始人与增长负责人：以下是 24 小时内最值得跟进的信号。</p>
+          <ul class="intel-list">
+            <li>AI 销售外呼工具平均获客成本下降至去年同期的 0.72 倍，B2B SaaS 试点窗口再次打开。</li>
+            <li>“垂直 Agent + 人工兜底”模式在客服与法务场景付费转化率明显高于纯自动化方案。</li>
+            <li>GPU 现货价格连续两周回落，适合启动模型微调与评测体系建设。</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h2 style="margin: 0">情报指数面板</h2>
+          <div class="tool-stats" style="margin-top: 0.9rem"><span>资本热度</span><b class="trend-up">78 / 100</b></div>
+          <div class="tool-stats"><span>工具增速</span><b class="trend-up">+16%</b></div>
+          <div class="tool-stats"><span>模型迭代频率</span><b class="trend-up">高</b></div>
+          <div class="tool-stats"><span>监管压力</span><b class="trend-down">上升</b></div>
+          <p style="margin-top: 0.75rem">建议动作：优先布局可量化 ROI 的行业 Agent 应用，暂缓重资产自训练项目。</p>
+        </article>
+      </section>
+
+      <footer>© 2026 AI Venture Intelligence · Built for founders, builders and investors.</footer>
     </main>
   </body>
 </html>
