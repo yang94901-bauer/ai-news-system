@@ -3,215 +3,178 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>⚡ 实时 AI 情报站</title>
+    <title>AI 创业情报决策仪表盘</title>
     <style>
       :root {
-        --bg: #070b16;
-        --bg2: #0c1328;
-        --glass: rgba(15, 24, 44, 0.62);
-        --glass-strong: rgba(17, 29, 51, 0.86);
-        --line: rgba(126, 166, 255, 0.24);
+        --bg: #060a14;
+        --panel: rgba(16, 24, 40, 0.68);
+        --panel-strong: rgba(14, 21, 36, 0.88);
+        --line: rgba(133, 170, 255, 0.25);
         --text: #eef3ff;
-        --muted: #9eafce;
-        --accent: #66b6ff;
-        --ok: #63efc8;
-        --hot: #ff8b7b;
-        --warm: #ffb45d;
-        --shadow: 0 22px 45px rgba(1, 6, 20, 0.45);
+        --muted: #9cafce;
+        --accent: #73b8ff;
+        --ok: #69efcc;
+        --warn: #ffb869;
+        --hot: #ff8d7f;
       }
       * { box-sizing: border-box; }
       html, body { margin: 0; }
       body {
         font-family: Inter, "Segoe UI", "PingFang SC", sans-serif;
         color: var(--text);
-        background: radial-gradient(circle at 15% -10%, #203561 0%, transparent 40%),
-          radial-gradient(circle at 90% 0%, #173a51 0%, transparent 35%), var(--bg);
+        background: radial-gradient(circle at 15% -5%, #1d3159 0%, transparent 40%), radial-gradient(circle at 90% 5%, #17344c 0%, transparent 35%), var(--bg);
       }
       .container { width: min(1240px, 92vw); margin: 0 auto; }
       .top-nav {
-        position: sticky; top: 0; z-index: 100;
+        position: sticky; top: 0; z-index: 30;
         border-bottom: 1px solid var(--line);
-        background: rgba(6, 11, 23, 0.72);
-        backdrop-filter: blur(18px);
+        backdrop-filter: blur(15px);
+        background: rgba(5, 10, 20, 0.8);
       }
-      .nav-inner { min-height: 72px; display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; }
-      .brand { font-weight: 700; letter-spacing: .02em; }
-      .menu { display: flex; flex-wrap: wrap; gap: .35rem; }
-      .menu a {
-        color: #d4e2ff; text-decoration: none; font-size: .9rem;
-        padding: .48rem .7rem; border-radius: 10px; transition: .2s ease;
+      .nav-inner { min-height: 70px; display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; }
+      .brand h1 { margin: 0; font-size: 1.05rem; }
+      .brand p { margin: .2rem 0 0; color: var(--muted); font-size: .82rem; }
+      .controls { display: grid; gap: .6rem; }
+      .filters { display: flex; flex-wrap: wrap; gap: .45rem; }
+      select, input {
+        border: 1px solid var(--line);
+        background: rgba(36, 49, 75, 0.55);
+        color: var(--text);
+        border-radius: 10px;
+        padding: .45rem .6rem;
       }
-      .menu a:hover { background: rgba(102, 182, 255, .15); color: #fff; }
-      .search { display: flex; align-items: center; gap: .45rem; border: 1px solid var(--line); border-radius: 999px; background: rgba(23, 34, 58, .7); padding: .3rem .65rem; }
-      .search input { background: transparent; border: 0; outline: none; color: var(--text); width: 220px; }
-      main { padding: 1.2rem 0 2rem; }
-      .panel { border: 1px solid var(--line); border-radius: 20px; background: var(--glass); backdrop-filter: blur(14px); box-shadow: var(--shadow); }
+      main { padding: 1rem 0 2rem; }
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--panel);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 20px 42px rgba(2, 8, 20, 0.5);
+      }
       .section { margin-top: 1rem; padding: 1rem; }
       .section h2 { margin: 0; font-size: 1.2rem; }
-      .sub { color: var(--muted); font-size: .84rem; }
-      .hero {
-        padding: 1.1rem;
-        background: linear-gradient(130deg, rgba(54, 102, 191, .28), rgba(30, 180, 139, .18));
-      }
-      .hero-top { display: flex; justify-content: space-between; align-items: center; gap: .8rem; margin-bottom: .9rem; }
-      .btn { border: 1px solid var(--line); border-radius: 999px; color: var(--text); background: rgba(102, 182, 255, .1); padding: .45rem .8rem; cursor: pointer; }
-      .grid { display: grid; gap: .8rem; }
-      .brief-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .card { border: 1px solid var(--line); border-radius: 16px; background: var(--glass-strong); padding: .9rem; transition: transform .2s ease, border-color .2s ease; }
-      .card:hover { transform: translateY(-3px); border-color: rgba(116, 241, 200, 0.55); }
-      .tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .4rem; }
-      .tag { padding: .1rem .5rem; border-radius: 999px; font-size: .72rem; border: 1px solid var(--line); color: #d5e5ff; }
-      .title { font-size: 1rem; margin: .2rem 0; }
-      .meta { font-size: .8rem; color: var(--muted); }
-      .impact { font-size: .86rem; line-height: 1.5; color: #d8e7ff; }
-      .trendbar { height: 7px; border-radius: 999px; background: rgba(255,255,255,.08); margin-top: .6rem; overflow: hidden; }
-      .trendbar span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--ok)); }
-      .expand { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .35s ease, opacity .25s ease; }
-      .card:hover .expand { max-height: 80px; opacity: 1; }
-      .toolbar { display: flex; gap: .45rem; flex-wrap: wrap; margin-top: .6rem; }
-      .pill { border: 1px solid var(--line); background: rgba(64, 90, 145, .25); color: #e5eeff; border-radius: 999px; padding: .28rem .62rem; cursor: pointer; }
-      .pill.active { background: rgba(102, 182, 255, .35); }
-      .tool-grid, .radar-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .radar-hot { border-color: rgba(255, 139, 123, .55); }
-      .radar-warm { border-color: rgba(255, 180, 93, .55); }
-      .source-list details { margin-top: .5rem; color: #cddcf8; }
-      footer { margin-top: 1rem; padding: 1rem; color: var(--muted); font-size: .86rem; }
+      .sub { color: var(--muted); font-size: .84rem; margin-top: .2rem; }
+      .grid { display: grid; gap: .75rem; margin-top: .75rem; }
+      .brief-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .radar-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .tools-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .card { border: 1px solid var(--line); border-radius: 14px; background: var(--panel-strong); padding: .85rem; }
+      .title { margin: .2rem 0; font-size: 1rem; }
+      .meta { font-size: .78rem; color: var(--muted); }
+      .impact { margin: .4rem 0 0; line-height: 1.45; font-size: .88rem; }
+      .tag { border: 1px solid var(--line); border-radius: 999px; padding: .1rem .5rem; font-size: .7rem; margin-right: .35rem; }
+      .empty { color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; padding: .8rem; }
+      .kpi { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .4rem; margin-top: .5rem; }
+      .kpi div { background: rgba(98,132,194,.15); border: 1px solid var(--line); border-radius: 10px; padding: .35rem .45rem; font-size: .76rem; }
+      .bar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.08); margin-top: .5rem; overflow: hidden; }
+      .bar span { height: 100%; display: block; background: linear-gradient(90deg,var(--accent),var(--ok)); }
+      .funding-layout { display: grid; grid-template-columns: 1.1fr .9fr; gap: .75rem; }
       @media (max-width: 980px) {
-        .nav-inner { grid-template-columns: 1fr; padding: .6rem 0; }
-        .search input { width: 100%; }
-        .brief-grid, .tool-grid, .radar-grid { grid-template-columns: 1fr; }
+        .nav-inner { grid-template-columns: 1fr; padding: .7rem 0; }
+        .brief-grid,.radar-grid,.tools-grid,.funding-layout,.kpi { grid-template-columns: 1fr; }
       }
     </style>
   </head>
   <body>
     <header class="top-nav">
       <div class="container nav-inner">
-        <div class="brand">⚡ 实时 AI 情报站</div>
-        <nav class="menu">
-          <a href="#brief">首页新闻</a><a href="#tools">热门工具</a><a href="#radar">创业机会</a><a href="#brief">今日 Brief</a><a href="#funding">融资资讯</a>
-        </nav>
-        <label class="search">🔎 <input id="searchInput" placeholder="搜索关键词：Agent / GPT / 融资..." /></label>
+        <div class="brand"><h1>AI 创业情报决策仪表盘</h1><p>5 秒看懂今日 AI 关键变化、机会与风险</p></div>
+        <div class="controls">
+          <div class="filters">
+            <input id="searchInput" placeholder="搜索事件 / 工具 / 融资" />
+            <select id="typeFilter"><option value="全部">全部类型</option><option value="赛道">赛道</option><option value="工具">工具</option><option value="融资">融资</option></select>
+            <select id="timeFilter"><option value="全部">全部时间</option><option value="24h">24h</option><option value="7d">7d</option></select>
+            <select id="heatFilter"><option value="全部">全部热度</option><option value="90">90+</option><option value="80">80+</option></select>
+          </div>
+          <div class="sub" id="refreshInfo"></div>
+        </div>
       </div>
     </header>
 
     <main class="container">
-      <section class="panel section hero" id="brief">
-        <div class="hero-top">
-          <div><h2>今日 AI Brief（核心焦点）</h2><div class="sub" id="refreshInfo">每 5 分钟自动刷新</div></div>
-          <button class="btn" id="refreshBtn">刷新今日 Brief</button>
-        </div>
-        <div class="grid brief-grid" id="briefGrid"></div>
-      </section>
-
-      <section class="panel section" id="tools">
-        <h2>AI 工具卡片</h2><div class="sub">可按类别过滤，展示增长与口碑</div>
-        <div class="toolbar" id="toolFilters"></div>
-        <div class="grid tool-grid" id="toolGrid"></div>
-      </section>
-
-      <section class="panel section" id="radar">
-        <h2>AI 创业 / 投融资雷达</h2><div class="sub">按热度排序，可展开查看细节</div>
-        <div class="toolbar"><button class="pill active" id="sortHeat">按热度排序</button><button class="pill" id="sortMaturity">按成熟度排序</button></div>
-        <div class="grid radar-grid" id="radarGrid"></div>
-      </section>
-
-      <section class="panel section source-list" id="funding">
-        <h2>数据源 & 实时更新</h2>
-        <div class="sub" id="sourceStatus">核心数据源在线</div>
-        <ul id="coreSources"></ul>
-        <details><summary>展开更多来源</summary><ul><li>Reddit r/MachineLearning</li><li>ArXiv cs.AI</li><li>TechCrunch AI</li></ul></details>
-      </section>
-
-      <footer class="panel">
-        <div>关于网站：面向产品、投资、创业者的实时 AI 情报主页。</div>
-        <div>联系方式：contact@ai-brief.local ｜ 数据源声明：仅做信息聚合与趋势分析。</div>
-        <div>会员功能：暂未开放（预留中）。</div>
-      </footer>
+      <section class="panel section" id="briefSection"><h2>今日 AI Brief（最重要 3 条）</h2><div class="sub">每条包含：发生了什么、重要性、商业影响、创业机会、风险提示、来源与时间</div><div class="grid brief-grid" id="briefGrid"></div></section>
+      <section class="panel section" id="radarSection"><h2>AI 趋势雷达</h2><div class="grid radar-grid" id="radarGrid"></div></section>
+      <section class="panel section" id="toolsSection"><h2>热门 AI 工具榜</h2><div class="grid tools-grid" id="toolGrid"></div></section>
+      <section class="panel section" id="fundingSection"><h2>AI 创业与融资情报</h2><div class="funding-layout"><div id="fundingTop"></div><div id="fundingInsights"></div></div></section>
     </main>
 
     <script>
-      // 模拟 API + JSON 数据结构
-      const mockApi = {
-        async fetchDashboard() {
-          await new Promise((r) => setTimeout(r, 200));
-          return {
-            brief: [
-              { title: "OpenAI 发布新一代 Agent 工作流模板", summary: "企业可直接复用任务拆解与审批链路。", impact: "商业", source: "OpenAI Blog", time: "08:20", tags: ["GPT", "AI Agent"], heat: 90, trend: 86 },
-              { title: "GitHub AI 项目周增长创季度新高", summary: "开发者工具与自动化 Agent 仓库增长明显。", impact: "技术", source: "GitHub Trending AI", time: "09:10", tags: ["AI Agent", "创业机会"], heat: 84, trend: 78 },
-              { title: "AI 视频生成赛道融资活跃", summary: "Runway 类产品获资本持续加码。", impact: "创业机会", source: "YouTube AI", time: "10:00", tags: ["投资热点", "创业机会"], heat: 88, trend: 82 }
-            ],
-            tools: [
-              { name: "Cursor", category: "开发", user: "开发者", growth: "+18%", feature: "AI 代码协作", rating: 4.8 },
-              { name: "Perplexity", category: "搜索", user: "研究/分析", growth: "+15%", feature: "实时问答检索", rating: 4.7 },
-              { name: "Claude", category: "办公", user: "产品/运营", growth: "+12%", feature: "长文本推理", rating: 4.7 },
-              { name: "Runway", category: "视频", user: "创作者", growth: "+21%", feature: "AI 视频生成", rating: 4.6 }
-            ],
-            tracks: [
-              { track: "AI Agent 应用层", heat: 94, invest: 91, maturity: 72 },
-              { track: "AI 视频与数字人", heat: 88, invest: 89, maturity: 65 },
-              { track: "垂直行业 Copilot", heat: 82, invest: 78, maturity: 80 },
-              { track: "模型评测与安全", heat: 76, invest: 69, maturity: 85 }
-            ],
-            sources: ["Hacker News", "GitHub Trending AI", "OpenAI Blog", "YouTube AI"]
-          };
+      const mockData = {
+        brief: [
+          {title:"OpenAI 推出企业级 Agent 执行框架", happened:"发布可审计多 Agent 流程模板，支持审批与责任追踪。", important:"降低企业部署复杂度，推动 Agent 从 Demo 走向生产。", biz:"咨询、交付、流程自动化市场加速。", opp:"可做行业 Agent OS、评估与治理工具。", risk:"合规与错误执行风险仍需人工兜底。", source:"OpenAI", time:"2026-05-08 08:30", type:"赛道", heat:95, track:"AI Agent", age:"24h"},
+          {title:"AI Coding 工具席位战升温", happened:"多家编程助手发布团队版并强化代码库检索。", important:"研发效率成为中型企业降本核心抓手。", biz:"团队订阅 ARPU 提升，进入企业软件采购池。", opp:"围绕安全、审计、迁移的插件机会明确。", risk:"同质化严重，获客成本上升。", source:"GitHub + 产品公告", time:"2026-05-08 09:15", type:"工具", heat:91, track:"AI Coding", age:"24h"},
+          {title:"AI 视频赛道连续出现高额融资", happened:"两家生成式视频公司披露新一轮融资。", important:"资本继续押注内容生产基础设施。", biz:"广告、电商素材、教育视频自动化需求释放。", opp:"可切入垂类模板与后期工作流 SaaS。", risk:"算力成本与版权合规压力高。", source:"TechCrunch / 公司公告", time:"2026-05-08 10:05", type:"融资", heat:89, track:"AI 视频", age:"24h"}
+        ],
+        radar: [
+          {track:"AI Agent", heat:95, trend:"↑ 强增长", opportunity:"企业流程自动化与垂直执行体", level:"S"},
+          {track:"AI Coding", heat:92, trend:"↑ 稳定增长", opportunity:"团队协作、代码治理、合规审计", level:"S"},
+          {track:"AI 视频", heat:88, trend:"↑ 快速增长", opportunity:"营销素材自动化、短视频工厂", level:"A"},
+          {track:"AI 搜索", heat:84, trend:"→ 高位震荡", opportunity:"垂类检索、企业知识问答", level:"A"},
+          {track:"AI 医疗", heat:81, trend:"↑ 缓慢增长", opportunity:"病历结构化、辅助决策", level:"A"},
+          {track:"AI 企业服务", heat:86, trend:"↑ 稳健增长", opportunity:"Agent 运维平台、质量监控", level:"A"}
+        ],
+        tools: [
+          {name:"Cursor", track:"AI Coding", heat:94, growth:"+23%", use:"工程团队", signal:"团队版扩张"},
+          {name:"Perplexity", track:"AI 搜索", heat:88, growth:"+16%", use:"研究/投研", signal:"信息效率提升"},
+          {name:"Runway", track:"AI 视频", heat:86, growth:"+20%", use:"内容团队", signal:"视频生产链完善"},
+          {name:"Harvey", track:"AI 企业服务", heat:82, growth:"+12%", use:"法律/专业服务", signal:"垂直化深化"}
+        ],
+        funding: {
+          top3:[
+            "视频生成基础模型公司 A 完成 B 轮融资，估值提升。",
+            "医疗 AI 平台公司 B 获战略投资，重点布局临床场景。",
+            "企业 Agent 安全公司 C 完成种子扩展轮。"
+          ],
+          weekly:"本周融资集中在 AI 视频、企业 Agent 安全与医疗合规三条线，早中期轮次占比上升。",
+          lanes:"高潜赛道：Agent 质量评估、行业知识引擎、AI 工作流编排。",
+          investor:"投资人关注信号：可复制销售路径、合规闭环、真实付费客户增长。",
+          founder:"创业者机会：做“模型能力 + 行业工作流 + 可量化 ROI”的窄切产品。"
         }
       };
 
-      let state = { data: null, toolFilter: "全部", radarSort: "heat" };
       const byId = (id) => document.getElementById(id);
+      const state = { q:"", type:"全部", time:"全部", heat:"全部" };
 
-      function renderBrief(items, keyword = "") {
-        const list = items.filter(i => `${i.title}${i.summary}${i.tags.join('')}`.toLowerCase().includes(keyword.toLowerCase()));
-        byId("briefGrid").innerHTML = list.map(i => `
-          <article class="card">
-            <div class="tags">${i.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-            <h3 class="title">${i.title}</h3>
-            <div class="meta">${i.source} · ${i.time} · 影响方向：${i.impact}</div>
-            <p class="impact">${i.summary}</p>
-            <div class="trendbar"><span style="width:${i.heat}%"></span></div>
-            <div class="expand"><div class="meta">趋势：${i.trend} / 100 ｜ 热度：${i.heat} / 100</div></div>
-          </article>`).join("");
+      function applyFilters(items) {
+        return items.filter(i => {
+          const hitQ = `${i.title}${i.happened}${i.track}${i.type}`.toLowerCase().includes(state.q.toLowerCase());
+          const hitType = state.type === "全部" || i.type === state.type;
+          const hitTime = state.time === "全部" || i.age === state.time;
+          const hitHeat = state.heat === "全部" || i.heat >= Number(state.heat);
+          return hitQ && hitType && hitTime && hitHeat;
+        });
       }
 
-      function renderTools() {
-        const categories = ["全部", ...new Set(state.data.tools.map(t => t.category))];
-        byId("toolFilters").innerHTML = categories.map(c => `<button class="pill ${c===state.toolFilter?'active':''}" data-c="${c}">${c}</button>`).join("");
-        const tools = state.data.tools.filter(t => state.toolFilter === "全部" || t.category === state.toolFilter);
-        byId("toolGrid").innerHTML = tools.map(t => `<article class="card"><h3 class="title">${t.name}</h3><div class="meta">适合用户：${t.user} ｜ 周增长率：${t.growth}</div><p class="impact">功能亮点：${t.feature}</p><div class="meta">外部评价：⭐ ${t.rating}</div></article>`).join("");
+      function renderBrief() {
+        const list = applyFilters(mockData.brief).slice(0,3);
+        byId("briefGrid").innerHTML = list.length ? list.map(i => `<article class="card"><span class="tag">${i.track}</span><span class="tag">热度 ${i.heat}</span><h3 class="title">${i.title}</h3><div class="meta">${i.source} · ${i.time}</div><p class="impact"><b>发生了什么：</b>${i.happened}</p><p class="impact"><b>为什么重要：</b>${i.important}</p><p class="impact"><b>商业影响：</b>${i.biz}</p><p class="impact"><b>创业机会：</b>${i.opp}</p><p class="impact"><b>风险提示：</b>${i.risk}</p></article>`).join("") : '<div class="empty">当前筛选条件下暂无 Brief，请放宽筛选条件。</div>';
       }
 
       function renderRadar() {
-        const sorted = [...state.data.tracks].sort((a,b)=>b[state.radarSort]-a[state.radarSort]);
-        byId("radarGrid").innerHTML = sorted.map(t => {
-          const cls = t.heat >= 90 ? "radar-hot" : t.heat >= 85 ? "radar-warm" : "";
-          return `<article class="card ${cls}"><h3 class="title">${t.track}</h3><div class="meta">热度 ${t.heat} ｜ 投资关注 ${t.invest} ｜ 成熟度 ${t.maturity}</div><div class="expand"><p class="impact">展开：该赛道适合进行 PMF 验证、垂类工作流封装与渠道共建。</p></div></article>`;
-        }).join("");
+        byId("radarGrid").innerHTML = mockData.radar.map(r => `<article class="card"><h3 class="title">${r.track}</h3><div class="meta">关注等级：${r.level}</div><div class="kpi"><div>热度 ${r.heat}</div><div>趋势 ${r.trend}</div><div style="grid-column:span 2;">商业机会：${r.opportunity}</div></div><div class="bar"><span style="width:${r.heat}%"></span></div></article>`).join("");
       }
 
-      function renderSources() {
-        byId("coreSources").innerHTML = state.data.sources.map(s => `<li>${s}</li>`).join("");
+      function renderTools() {
+        const items = mockData.tools.filter(t => state.type === "全部" || state.type === "工具" || t.track.includes(state.type));
+        byId("toolGrid").innerHTML = items.length ? items.map(t => `<article class="card"><h3 class="title">${t.name}</h3><div class="meta">赛道：${t.track} ｜ 热度：${t.heat}</div><p class="impact">增长：${t.growth} ｜ 适用人群：${t.use}</p><p class="impact">信号：${t.signal}</p></article>`).join("") : '<div class="empty">暂无符合筛选条件的工具。</div>';
       }
 
-      async function refreshAll() {
-        try {
-          state.data = await mockApi.fetchDashboard();
-          renderBrief(state.data.brief, byId("searchInput").value);
-          renderTools(); renderRadar(); renderSources();
-          byId("refreshInfo").textContent = `最近刷新：${new Date().toLocaleString('zh-CN', { hour12: false })}（自动 5 分钟）`;
-          byId("sourceStatus").textContent = "核心数据源在线，自动刷新中";
-        } catch (e) {
-          byId("sourceStatus").textContent = `加载失败：${e.message}`;
-        }
+      function renderFunding() {
+        const f = mockData.funding;
+        byId("fundingTop").innerHTML = `<div class="card"><h3 class="title">今日 Top 3 融资事件</h3><ol>${f.top3.map(i => `<li class="impact">${i}</li>`).join("")}</ol></div><div class="card" style="margin-top:.7rem;"><h3 class="title">本周融资趋势</h3><p class="impact">${f.weekly}</p></div>`;
+        byId("fundingInsights").innerHTML = `<div class="card"><h3 class="title">高潜赛道</h3><p class="impact">${f.lanes}</p><h3 class="title">投资人关注信号</h3><p class="impact">${f.investor}</p><h3 class="title">创业者机会分析</h3><p class="impact">${f.founder}</p></div>`;
       }
 
-      byId("refreshBtn").addEventListener("click", refreshAll);
-      byId("searchInput").addEventListener("input", (e) => renderBrief(state.data?.brief || [], e.target.value));
-      byId("toolFilters").addEventListener("click", (e) => { if (!e.target.dataset.c) return; state.toolFilter = e.target.dataset.c; renderTools(); });
-      byId("sortHeat").addEventListener("click", () => { state.radarSort = "heat"; byId("sortHeat").classList.add("active"); byId("sortMaturity").classList.remove("active"); renderRadar(); });
-      byId("sortMaturity").addEventListener("click", () => { state.radarSort = "maturity"; byId("sortMaturity").classList.add("active"); byId("sortHeat").classList.remove("active"); renderRadar(); });
+      function render() {
+        renderBrief(); renderRadar(); renderTools(); renderFunding();
+        byId("refreshInfo").textContent = `最近更新：${new Date().toLocaleString("zh-CN", {hour12:false})}`;
+      }
 
-      refreshAll();
-      setInterval(refreshAll, 5 * 60 * 1000);
+      byId("searchInput").addEventListener("input", e => { state.q = e.target.value; render(); });
+      byId("typeFilter").addEventListener("change", e => { state.type = e.target.value; render(); });
+      byId("timeFilter").addEventListener("change", e => { state.time = e.target.value; render(); });
+      byId("heatFilter").addEventListener("change", e => { state.heat = e.target.value; render(); });
+      render();
     </script>
   </body>
 </html>
