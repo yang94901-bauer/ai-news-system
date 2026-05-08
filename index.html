@@ -36,6 +36,19 @@
       .brand p { margin: .2rem 0 0; color: var(--muted); font-size: .82rem; }
       .controls { display: grid; gap: .6rem; }
       .filters { display: flex; flex-wrap: wrap; gap: .45rem; }
+      .quick-nav { display: flex; flex-wrap: wrap; gap: .45rem; }
+      .quick-link {
+        border: 1px solid var(--line);
+        background: rgba(36, 49, 75, 0.4);
+        color: var(--text);
+        border-radius: 10px;
+        padding: .42rem .65rem;
+        text-decoration: none;
+        font-size: .84rem;
+        transition: transform .2s ease, border-color .2s ease, background .2s ease;
+      }
+      .quick-link:hover { border-color: var(--accent); background: rgba(56, 98, 172, 0.32); transform: translateY(-1px); }
+      .quick-link:active { transform: scale(.98); }
       select, input {
         border: 1px solid var(--line);
         background: rgba(36, 49, 75, 0.55);
@@ -59,6 +72,12 @@
       .radar-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
       .tools-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
       .card { border: 1px solid var(--line); border-radius: 14px; background: var(--panel-strong); padding: .85rem; }
+      .interactive {
+        cursor: pointer;
+        transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+      }
+      .interactive:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(12, 38, 72, .45); }
+      .interactive:active { transform: scale(.99); }
       .title { margin: .2rem 0; font-size: 1rem; }
       .meta { font-size: .78rem; color: var(--muted); }
       .impact { margin: .4rem 0 0; line-height: 1.45; font-size: .88rem; }
@@ -69,6 +88,21 @@
       .bar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.08); margin-top: .5rem; overflow: hidden; }
       .bar span { height: 100%; display: block; background: linear-gradient(90deg,var(--accent),var(--ok)); }
       .funding-layout { display: grid; grid-template-columns: 1.1fr .9fr; gap: .75rem; }
+      .details {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transition: grid-template-rows .28s ease, opacity .26s ease;
+      }
+      .details > div { overflow: hidden; }
+      .card.expanded .details { grid-template-rows: 1fr; opacity: 1; margin-top: .45rem; }
+      .modal {
+        position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+        background: rgba(3, 8, 17, 0.72); z-index: 80; padding: 1rem;
+      }
+      .modal.open { display: flex; }
+      .modal-panel { width: min(720px, 100%); max-height: 90vh; overflow: auto; padding: 1rem; }
+      .modal-close { float: right; }
       @media (max-width: 980px) {
         .nav-inner { grid-template-columns: 1fr; padding: .7rem 0; }
         .brief-grid,.radar-grid,.tools-grid,.funding-layout,.kpi { grid-template-columns: 1fr; }
@@ -82,21 +116,28 @@
         <div class="controls">
           <div class="filters">
             <input id="searchInput" placeholder="搜索事件 / 工具 / 融资" />
-            <select id="typeFilter"><option value="全部">全部类型</option><option value="赛道">赛道</option><option value="工具">工具</option><option value="融资">融资</option></select>
-            <select id="timeFilter"><option value="全部">全部时间</option><option value="24h">24h</option><option value="7d">7d</option></select>
+            <select id="typeFilter"><option value="全部">全部赛道</option><option value="AI Agent">AI Agent</option><option value="AI Coding">AI Coding</option><option value="AI 视频">AI 视频</option><option value="AI 医疗">AI 医疗</option><option value="AI 企业服务">AI 企业服务</option></select>
+            <select id="timeFilter"><option value="全部">全部时间</option><option value="24h">24h</option><option value="7d">7d</option><option value="30d">30d</option></select>
             <select id="heatFilter"><option value="全部">全部热度</option><option value="90">90+</option><option value="80">80+</option></select>
           </div>
+          <nav class="quick-nav">
+            <a href="#brief" class="quick-link">今日 Brief</a>
+            <a href="#trends" class="quick-link">AI 趋势雷达</a>
+            <a href="#tools" class="quick-link">热门工具</a>
+            <a href="#funding" class="quick-link">融资资讯</a>
+          </nav>
           <div class="sub" id="refreshInfo"></div>
         </div>
       </div>
     </header>
 
     <main class="container">
-      <section class="panel section" id="briefSection"><h2>今日 AI Brief（最重要 3 条）</h2><div class="sub">每条包含：发生了什么、重要性、商业影响、创业机会、风险提示、来源与时间</div><div class="grid brief-grid" id="briefGrid"></div></section>
-      <section class="panel section" id="radarSection"><h2>AI 趋势雷达</h2><div class="grid radar-grid" id="radarGrid"></div></section>
-      <section class="panel section" id="toolsSection"><h2>热门 AI 工具榜</h2><div class="grid tools-grid" id="toolGrid"></div></section>
-      <section class="panel section" id="fundingSection"><h2>AI 创业与融资情报</h2><div class="funding-layout"><div id="fundingTop"></div><div id="fundingInsights"></div></div></section>
+      <section class="panel section" id="brief"><h2>今日 AI Brief（最重要 3 条）</h2><div class="sub">点击卡片查看详情：发生了什么、为什么重要、商业影响、创业机会、风险提示、来源链接</div><div class="grid brief-grid" id="briefGrid"></div></section>
+      <section class="panel section" id="trends"><h2>AI 趋势雷达</h2><div class="grid radar-grid" id="radarGrid"></div></section>
+      <section class="panel section" id="tools"><h2>热门 AI 工具榜</h2><div class="grid tools-grid" id="toolGrid"></div></section>
+      <section class="panel section" id="funding"><h2>AI 创业与融资情报</h2><div class="funding-layout"><div id="fundingTop"></div><div id="fundingInsights"></div></div></section>
     </main>
+    <div id="detailModal" class="modal" role="dialog" aria-modal="true" aria-label="详情弹窗"></div>
 
     <script>
       const mockData = {
@@ -133,12 +174,12 @@
       };
 
       const byId = (id) => document.getElementById(id);
-      const state = { q:"", type:"全部", time:"全部", heat:"全部" };
+      const state = { q:"", type:"全部", time:"全部", heat:"全部", expandedBrief:null };
 
       function applyFilters(items) {
         return items.filter(i => {
-          const hitQ = `${i.title}${i.happened}${i.track}${i.type}`.toLowerCase().includes(state.q.toLowerCase());
-          const hitType = state.type === "全部" || i.type === state.type;
+          const hitQ = `${i.title}${i.happened}${i.track}${i.type}${i.source}`.toLowerCase().includes(state.q.toLowerCase());
+          const hitType = state.type === "全部" || i.track === state.type;
           const hitTime = state.time === "全部" || i.age === state.time;
           const hitHeat = state.heat === "全部" || i.heat >= Number(state.heat);
           return hitQ && hitType && hitTime && hitHeat;
@@ -147,7 +188,7 @@
 
       function renderBrief() {
         const list = applyFilters(mockData.brief).slice(0,3);
-        byId("briefGrid").innerHTML = list.length ? list.map(i => `<article class="card"><span class="tag">${i.track}</span><span class="tag">热度 ${i.heat}</span><h3 class="title">${i.title}</h3><div class="meta">${i.source} · ${i.time}</div><p class="impact"><b>发生了什么：</b>${i.happened}</p><p class="impact"><b>为什么重要：</b>${i.important}</p><p class="impact"><b>商业影响：</b>${i.biz}</p><p class="impact"><b>创业机会：</b>${i.opp}</p><p class="impact"><b>风险提示：</b>${i.risk}</p></article>`).join("") : '<div class="empty">当前筛选条件下暂无 Brief，请放宽筛选条件。</div>';
+        byId("briefGrid").innerHTML = list.length ? list.map((i, idx) => `<article class="card interactive ${state.expandedBrief === idx ? "expanded" : ""}" data-brief-index="${idx}" role="button" tabindex="0" aria-expanded="${state.expandedBrief === idx}"><span class="tag">${i.track}</span><span class="tag">热度 ${i.heat}</span><h3 class="title">${i.title}</h3><div class="meta">${i.source} · ${i.time}</div><div class="details"><div><p class="impact"><b>发生了什么：</b>${i.happened}</p><p class="impact"><b>为什么重要：</b>${i.important}</p><p class="impact"><b>商业影响：</b>${i.biz}</p><p class="impact"><b>创业机会：</b>${i.opp}</p><p class="impact"><b>风险提示：</b>${i.risk}</p><p class="impact"><b>来源链接：</b><a class="quick-link" href="#" onclick="event.preventDefault()">查看来源（${i.source}）</a></p></div></div></article>`).join("") : '<div class="empty">暂无匹配情报</div>';
       }
 
       function renderRadar() {
@@ -155,25 +196,58 @@
       }
 
       function renderTools() {
-        const items = mockData.tools.filter(t => state.type === "全部" || state.type === "工具" || t.track.includes(state.type));
-        byId("toolGrid").innerHTML = items.length ? items.map(t => `<article class="card"><h3 class="title">${t.name}</h3><div class="meta">赛道：${t.track} ｜ 热度：${t.heat}</div><p class="impact">增长：${t.growth} ｜ 适用人群：${t.use}</p><p class="impact">信号：${t.signal}</p></article>`).join("") : '<div class="empty">暂无符合筛选条件的工具。</div>';
+        const items = mockData.tools.filter(t => (state.type === "全部" || t.track === state.type) && (state.time === "全部" || t.age === state.time) && (state.heat === "全部" || t.heat >= Number(state.heat)) && (`${t.name}${t.track}${t.use}${t.signal}`.toLowerCase().includes(state.q.toLowerCase())));
+        byId("toolGrid").innerHTML = items.length ? items.map((t, idx) => `<article class="card interactive" data-tool-index="${idx}" role="button" tabindex="0"><h3 class="title">${t.name}</h3><div class="meta">赛道：${t.track} ｜ 热度：${t.heat}</div><p class="impact">增长：${t.growth} ｜ 适用人群：${t.use}</p><p class="impact">信号：${t.signal}</p></article>`).join("") : '<div class="empty">暂无匹配情报</div>';
+        return items;
       }
 
       function renderFunding() {
-        const f = mockData.funding;
-        byId("fundingTop").innerHTML = `<div class="card"><h3 class="title">今日 Top 3 融资事件</h3><ol>${f.top3.map(i => `<li class="impact">${i}</li>`).join("")}</ol></div><div class="card" style="margin-top:.7rem;"><h3 class="title">本周融资趋势</h3><p class="impact">${f.weekly}</p></div>`;
+        const f = mockData.funding; const events = f.events.filter(e => (state.type === "全部" || e.track === state.type) && (state.time === "全部" || e.age === state.time) && (state.heat === "全部" || e.heat >= Number(state.heat)) && (`${e.company}${e.track}${e.round}${e.investors}`.toLowerCase().includes(state.q.toLowerCase())));
+        byId("fundingTop").innerHTML = events.length ? `<div class="card"><h3 class="title">今日融资事件</h3><ol>${events.map((e, idx) => `<li class="impact"><button class="quick-link funding-link" data-funding-index="${idx}">${e.company}｜${e.round}｜${e.amount}</button></li>`).join("")}</ol></div><div class="card" style="margin-top:.7rem;"><h3 class="title">本周融资趋势</h3><p class="impact">${f.weekly}</p></div>` : '<div class="empty">暂无匹配情报</div>';
         byId("fundingInsights").innerHTML = `<div class="card"><h3 class="title">高潜赛道</h3><p class="impact">${f.lanes}</p><h3 class="title">投资人关注信号</h3><p class="impact">${f.investor}</p><h3 class="title">创业者机会分析</h3><p class="impact">${f.founder}</p></div>`;
+        return events;
       }
 
       function render() {
-        renderBrief(); renderRadar(); renderTools(); renderFunding();
+        renderBrief(); renderRadar(); const toolItems = renderTools(); const fundingItems = renderFunding();
+        bindInteractions(toolItems, fundingItems);
         byId("refreshInfo").textContent = `最近更新：${new Date().toLocaleString("zh-CN", {hour12:false})}`;
       }
+      function openModal(title, lines) {
+        byId("detailModal").innerHTML = `<div class="modal-panel panel"><button class="quick-link modal-close" id="closeModal">关闭</button><h3 class="title">${title}</h3>${lines.map(l => `<p class="impact">${l}</p>`).join("")}</div>`;
+        byId("detailModal").classList.add("open");
+        byId("closeModal").onclick = closeModal;
+      }
+      function closeModal() { byId("detailModal").classList.remove("open"); }
+      function bindInteractions(toolItems, fundingItems) {
+        document.querySelectorAll("[data-brief-index]").forEach(el => {
+          const toggle = () => { const idx = Number(el.dataset.briefIndex); state.expandedBrief = state.expandedBrief === idx ? null : idx; render(); };
+          el.onclick = toggle; el.onkeydown = (e) => (e.key === "Enter" || e.key === " ") && toggle();
+        });
+        document.querySelectorAll("[data-tool-index]").forEach(el => {
+          const t = toolItems[Number(el.dataset.toolIndex)];
+          const open = () => openModal(`${t.name} 工具详情`, [`工具简介：${t.signal}`, `适合人群：${t.use}`, `核心功能：AI 辅助能力 + 工作流提效`, `替代品：同赛道其他 ${t.track} 工具`, `官网链接：${t.site}`]);
+          el.onclick = open; el.onkeydown = (e) => (e.key === "Enter" || e.key === " ") && open();
+        });
+        document.querySelectorAll(".funding-link").forEach(el => {
+          const f = fundingItems[Number(el.dataset.fundingIndex)];
+          el.onclick = () => openModal(`${f.company} 融资详情`, [`公司简介：${f.profile}`, `融资金额：${f.amount}`, `轮次：${f.round}`, `投资方：${f.investors}`, `赛道：${f.track}`, `商业意义：${f.business}`, `风险判断：${f.risk}`]);
+        });
+      }
+      document.querySelectorAll(".quick-link[href^='#']").forEach(a => a.addEventListener("click", (e) => { e.preventDefault(); document.querySelector(a.getAttribute("href"))?.scrollIntoView({behavior:"smooth", block:"start"}); }));
+      byId("detailModal").addEventListener("click", e => { if (e.target.id === "detailModal") closeModal(); });
 
       byId("searchInput").addEventListener("input", e => { state.q = e.target.value; render(); });
       byId("typeFilter").addEventListener("change", e => { state.type = e.target.value; render(); });
       byId("timeFilter").addEventListener("change", e => { state.time = e.target.value; render(); });
       byId("heatFilter").addEventListener("change", e => { state.heat = e.target.value; render(); });
+
+      mockData.tools = mockData.tools.map(t => ({...t, site:`https://example.com/${t.name.toLowerCase()}`, age:"7d"}));
+      mockData.funding.events = [
+        {company:"视频生成基础模型公司 A", profile:"聚焦营销与内容生产的生成式视频基础设施。", amount:"$85M", round:"B 轮", investors:"North Star / Vision Capital", track:"AI 视频", business:"推动广告与电商素材工业化交付。", risk:"高算力成本与内容版权风险。", heat:89, age:"24h"},
+        {company:"医疗 AI 平台公司 B", profile:"提供临床决策支持与病历结构化产品。", amount:"$42M", round:"战略轮", investors:"MediGrowth / Hospital Ventures", track:"AI 医疗", business:"加速医院场景落地和医疗合规能力建设。", risk:"监管周期长、销售周期重。", heat:84, age:"7d"},
+        {company:"企业 Agent 安全公司 C", profile:"专注 Agent 审计、权限控制与风险拦截。", amount:"$18M", round:"种子扩展轮", investors:"Secure AI Fund", track:"AI 企业服务", business:"补齐企业 Agent 生产环境必需安全层。", risk:"客户教育成本较高。", heat:82, age:"30d"}
+      ];
       render();
     </script>
   </body>
