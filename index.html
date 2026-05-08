@@ -3,142 +3,226 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>实时 AI 情报站 | Live AI Intelligence</title>
+    <title>AI Intelligence Dashboard | 今日智能情报</title>
     <style>
-      :root { --bg:#070b14;--panel:#0f1627;--line:#23304d;--text:#e6edf7;--muted:#90a0bf;--accent:#3ea6ff;--accent2:#27d3a2; }
-      *{box-sizing:border-box} body{margin:0;font-family:Inter,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
-      .container{width:min(1180px,92vw);margin:auto} .top-nav{position:sticky;top:0;background:#070b14d6;border-bottom:1px solid #2a3a5f;backdrop-filter:blur(10px);z-index:9}
-      .nav-inner{display:flex;justify-content:space-between;align-items:center;min-height:62px}.nav-links{display:flex;gap:1rem;color:var(--muted);font-size:.92rem;flex-wrap:wrap}
-      .hero,.card{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#131f36,#0d1628)} .hero{margin:1.1rem 0;padding:1rem 1.1rem}
-      .hero p,.meta,small,.status{color:var(--muted)}
-      .section-title{display:flex;justify-content:space-between;align-items:center;margin:1rem 0 .6rem}.section-title h2{margin:0;font-size:1.12rem}
-      .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:.8rem}.col-4{grid-column:span 4}.col-6{grid-column:span 6}.col-3{grid-column:span 3}.card{padding:.95rem}
-      .tag{display:inline-block;padding:.18rem .5rem;border-radius:99px;background:#3ea6ff22;color:#8ecbff;font-size:.74rem;font-weight:600}
-      h3{margin:.35rem 0;font-size:1rem} p{margin:.45rem 0 0;font-size:.91rem;color:#c8d5ea}
-      .refresh{color:var(--accent2)} .status{font-size:.82rem}.hot{color:#ffd166}
-      @media (max-width:900px){.col-4,.col-6{grid-column:span 6}.col-3{grid-column:span 4}}
-      @media (max-width:680px){.col-4,.col-6,.col-3{grid-column:span 12}}
+      :root {
+        --bg: #060915;
+        --bg-soft: #0a1022;
+        --panel: rgba(17, 24, 42, 0.64);
+        --panel-strong: rgba(19, 29, 50, 0.82);
+        --line: rgba(159, 180, 255, 0.16);
+        --text: #ecf2ff;
+        --muted: #9babcc;
+        --accent: #66b3ff;
+        --accent-2: #65f0c5;
+        --danger: #ff8f95;
+        --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, "Segoe UI", "PingFang SC", sans-serif;
+        color: var(--text);
+        background: radial-gradient(circle at 20% -15%, #1d2b52 0%, transparent 45%), radial-gradient(circle at 80% 0%, #193145 0%, transparent 38%), var(--bg);
+      }
+
+      .container { width: min(1220px, 92vw); margin: 0 auto; }
+      .top-nav {
+        position: sticky; top: 0; z-index: 30;
+        border-bottom: 1px solid var(--line);
+        background: rgba(5, 9, 19, 0.68);
+        backdrop-filter: blur(18px);
+      }
+      .nav-inner { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+      .brand h1 { font-size: 1.02rem; margin: 0; letter-spacing: .02em; }
+      .brand p { margin: .2rem 0 0; font-size: .78rem; color: var(--muted); }
+      .nav-actions { display: flex; gap: .7rem; align-items: center; }
+      .btn {
+        border: 1px solid var(--line); color: var(--text); background: rgba(129, 156, 245, 0.08);
+        border-radius: 999px; padding: .5rem .95rem; font-size: .84rem; text-decoration: none;
+      }
+      .btn.primary { background: linear-gradient(120deg, #57b7ff 0%, #60f0ca 120%); color: #061220; border: none; font-weight: 600; }
+
+      .hero { margin: 2rem 0 1.4rem; padding: 1.2rem; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); box-shadow: var(--shadow); backdrop-filter: blur(16px); }
+      .hero-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; }
+      .hero h2 { margin: 0; font-size: 1.65rem; }
+      .hero p { margin: .5rem 0 0; color: #c7d6f3; line-height: 1.55; }
+      .hero-badges { display: flex; gap: .55rem; flex-wrap: wrap; margin-top: .9rem; }
+      .badge { padding: .25rem .55rem; border-radius: 999px; border: 1px solid var(--line); color: #c4d8ff; font-size: .74rem; }
+
+      .panel { border: 1px solid var(--line); border-radius: 18px; padding: 1rem; background: var(--panel); backdrop-filter: blur(14px); }
+      .section { margin: 1.4rem 0 0; }
+      .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .8rem; }
+      .section-head h3 { margin: 0; font-size: 1.1rem; }
+      .section-head small { color: var(--muted); }
+
+      .grid { display: grid; gap: .9rem; }
+      .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .card { border: 1px solid var(--line); border-radius: 16px; padding: .95rem; background: var(--panel-strong); }
+      .card h4 { margin: .45rem 0 .35rem; font-size: .98rem; line-height: 1.35; }
+      .card p { margin: .25rem 0; color: #c8d7ef; font-size: .9rem; line-height: 1.5; }
+      .meta { color: var(--muted); font-size: .8rem; }
+      .tag { display: inline-block; color: #81c8ff; border: 1px solid #3b5c90; background: #132746; border-radius: 999px; padding: .16rem .5rem; font-size: .72rem; }
+      .score { color: var(--accent-2); font-weight: 600; }
+      .danger { color: var(--danger); }
+
+      .highlights li { margin-bottom: .7rem; color: #d5e3fa; }
+      .highlights a { color: #e7f1ff; text-decoration: none; }
+      .highlights a:hover { text-decoration: underline; }
+
+      .pro-zone {
+        margin-top: 1.1rem;
+        border-radius: 18px; padding: 1rem;
+        border: 1px solid rgba(101, 240, 197, 0.35);
+        background: linear-gradient(135deg, rgba(49, 107, 183, 0.3), rgba(43, 163, 129, 0.2));
+      }
+      .pro-zone h4 { margin: 0; font-size: 1rem; }
+      .stack { display: grid; gap: .9rem; }
+
+      footer { color: var(--muted); font-size: .82rem; margin: 2rem 0 2.2rem; }
+      @media (max-width: 930px) {
+        .hero-grid, .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; }
+      }
     </style>
   </head>
   <body>
-    <header class="top-nav"><div class="container nav-inner"><strong>⚡ 实时 AI 情报站</strong><nav class="nav-links"><a href="#summary">自动总结</a><a href="#latest">最新动态</a><a href="#video">视频/KOL</a></nav></div></header>
-    <main class="container">
-      <section class="hero"><h1 style="margin:.1rem 0 .35rem">聚合 8 大 AI 数据源</h1><p>OpenAI Blog / Anthropic News / GitHub Trending AI / Product Hunt AI / AI Startup Funding / YouTube AI / X(Twitter) AI KOL。</p><div class="status" id="status">加载中...</div></section>
+    <header class="top-nav">
+      <div class="container nav-inner">
+        <div class="brand">
+          <h1>AI Intelligence Dashboard</h1>
+          <p>Bloomberg × Perplexity 风格每日 AI 决策面板</p>
+        </div>
+        <div class="nav-actions">
+          <a class="btn" href="#brief">Daily Brief</a>
+          <a class="btn primary" href="#membership">会员入口</a>
+        </div>
+      </div>
+    </header>
 
-      <section id="summary"><div class="section-title"><h2>AI 自动总结</h2><small id="lastUpdated">--</small></div><div class="grid" id="autoSummary"></div></section>
-      <section id="latest"><div class="section-title"><h2>AI 资讯流</h2><small>按时间排序</small></div><div class="grid" id="latestNews"></div></section>
-      <section><div class="section-title"><h2>GitHub Trending AI</h2></div><div class="grid" id="ghTrending"></div></section>
-      <section><div class="section-title"><h2>OpenAI Blog + Anthropic News</h2></div><div class="grid" id="labsNews"></div></section>
-      <section><div class="section-title"><h2>Product Hunt AI</h2></div><div class="grid" id="productHunt"></div></section>
-      <section><div class="section-title"><h2>AI Startup Funding</h2></div><div class="grid" id="fundingNews"></div></section>
-      <section id="video"><div class="section-title"><h2>YouTube AI 频道</h2></div><div class="grid" id="youtubeAI"></div></section>
-      <section><div class="section-title"><h2>X/Twitter AI KOL</h2></div><div class="grid" id="twitterKOL"></div></section>
-      <footer style="color:#90a0bf;font-size:.82rem;margin:1.2rem 0 2rem">Data sources via RSS/JSON mirrors. 若个别源被限流，会显示降级结果。</footer>
+    <main class="container">
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <h2>今日 AI Intelligence</h2>
+            <p>聚焦对商业决策有意义的 AI 动态：自动生成商业影响、创业机会、趋势评分，并过滤低价值信息噪音。</p>
+            <div class="hero-badges">
+              <span class="badge" id="lastUpdated">更新中...</span>
+              <span class="badge" id="sourceStatus">信号源筛选中...</span>
+              <span class="badge">Pro Intelligence Ready</span>
+            </div>
+          </div>
+          <aside class="panel">
+            <div class="meta">今日最重要 3 条 AI 情报</div>
+            <ol class="highlights" id="top3"></ol>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="intelligence">
+        <div class="section-head"><h3>今日 AI Intelligence</h3><small>高影响力事件（自动评估）</small></div>
+        <div class="grid cols-3" id="dailyIntel"></div>
+      </section>
+
+      <section class="section" id="radar">
+        <div class="section-head"><h3>AI 趋势雷达</h3><small>主题热度与方向性变化</small></div>
+        <div class="grid cols-2" id="trendRadar"></div>
+      </section>
+
+      <section class="section" id="tools">
+        <div class="section-head"><h3>热门 AI 工具榜</h3><small>仅保留高关注产品</small></div>
+        <div class="grid cols-2" id="toolBoard"></div>
+      </section>
+
+      <section class="section" id="funding">
+        <div class="section-head"><h3>创业融资情报</h3><small>融资动态 + 创业切入机会</small></div>
+        <div class="grid cols-2" id="fundingIntel"></div>
+      </section>
+
+      <section class="section stack" id="membership">
+        <div class="panel">
+          <div class="section-head"><h3>会员入口</h3><small>解锁更深层 Pro Intelligence</small></div>
+          <p>会员可查看行业拆解报告、竞争版图监控、每周策略 memo 与细分赛道评分模型。</p>
+          <a href="#" class="btn primary">升级到 Intelligence Pro</a>
+        </div>
+
+        <div class="panel" id="brief">
+          <div class="section-head"><h3>Daily Brief 邮件订阅</h3><small>每天 07:30 发送 5 条高价值情报</small></div>
+          <p>获取：关键事件摘要 / 商业影响 / 创业机会 / 趋势评分变化。</p>
+          <a href="#" class="btn">订阅 Daily Brief</a>
+        </div>
+
+        <div class="pro-zone">
+          <h4>Pro Intelligence</h4>
+          <p>面向投资人与创业者的高级视图：赛道领先者变动、融资密度热图、AI 工具市场渗透趋势。</p>
+        </div>
+      </section>
+
+      <footer>Dashboard 已移除低价值信息源展示，突出高信号内容与可执行决策信息。</footer>
     </main>
 
     <script>
       const el = (id) => document.getElementById(id);
-      const safe = (v, d = "-") => (v === undefined || v === null || v === "" ? d : v);
+      const stripHtml = (s = "") => s.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
       const fmtDate = (iso) => new Date(iso).toLocaleString("zh-CN", { hour12: false });
-      const stripHtml = (s="") => s.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
-      const allFeedItems = [];
 
-      function card({ tag, title, meta, text, link }, cls = "col-4") {
-        return `<article class="card ${cls}"><span class="tag">${safe(tag)}</span><h3><a href="${link}" target="_blank" rel="noopener">${safe(title)}</a></h3><div class="meta">${safe(meta)}</div><p>${safe(text, "点击查看详情")}</p></article>`;
+      async function fetchJSON(url) { const res = await fetch(url); if (!res.ok) throw new Error(res.status); return res.json(); }
+      async function fetchRSS(url) { return fetchJSON(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`); }
+
+      const scoreKeywords = {
+        funding: [/raised|funding|series|融资|investment/i, 26],
+        release: [/launch|released|announce|发布|openai|anthropic|gemini/i, 24],
+        builder: [/agent|workflow|developer|api|sdk|infra|tool/i, 22],
+        market: [/enterprise|copilot|productivity|automation|business/i, 18]
+      };
+
+      function intelligence(item) {
+        const text = `${item.title} ${item.desc || ""}`;
+        let score = 38;
+        Object.values(scoreKeywords).forEach(([rule, plus]) => { if (rule.test(text)) score += plus; });
+        score = Math.min(98, score);
+        const businessImpact = score > 80 ? "将加速企业采用与预算迁移" : score > 65 ? "中短期推动行业竞争加剧" : "作为跟踪信号，需观察持续性";
+        const startupOpportunity = /agent|workflow|automation|developer|api/i.test(text)
+          ? "可切入垂类 Agent、流程自动化与集成服务。"
+          : "可围绕细分行业做二次封装与分发增长。";
+        return { ...item, score, businessImpact, startupOpportunity };
       }
 
-      async function fetchJSON(url) {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+      function cardHTML(it, tag) {
+        return `<article class="card"><span class="tag">${tag}</span><h4><a href="${it.link}" target="_blank" rel="noopener">${it.title}</a></h4><div class="meta">${fmtDate(it.date)} · 趋势评分 <span class="score">${it.score}</span></div><p><strong>商业影响：</strong>${it.businessImpact}</p><p><strong>创业机会：</strong>${it.startupOpportunity}</p></article>`;
       }
 
-      async function fetchRSS(url) {
-        const encoded = encodeURIComponent(url);
-        return fetchJSON(`https://api.rss2json.com/v1/api.json?rss_url=${encoded}`);
-      }
-
-      function addItems(source, items, mapper) {
-        (items || []).slice(0, 6).forEach((it) => allFeedItems.push(mapper(it, source)));
-      }
-
-      async function loadLabsNews() {
-        const [openai, anthropic] = await Promise.all([
+      async function refresh() {
+        const [lab, ph, funding] = await Promise.all([
           fetchRSS("https://openai.com/blog/rss.xml"),
-          fetchRSS("https://www.anthropic.com/news/rss.xml")
+          fetchRSS("https://www.producthunt.com/feed"),
+          fetchJSON("https://hn.algolia.com/api/v1/search_by_date?query=AI%20startup%20raised%20series%20funding&tags=story&hitsPerPage=12")
         ]);
-        const combined = [
-          ...(openai.items || []).map((it)=>({source:"OpenAI Blog",title:it.title,link:it.link,date:it.pubDate,desc:stripHtml(it.description)})),
-          ...(anthropic.items || []).map((it)=>({source:"Anthropic News",title:it.title,link:it.link,date:it.pubDate,desc:stripHtml(it.description)}))
-        ].sort((a,b)=>new Date(b.date)-new Date(a.date));
 
-        el("labsNews").innerHTML = combined.slice(0,8).map((it)=>card({tag:it.source,title:it.title,meta:fmtDate(it.date),text:it.desc.slice(0,110)+"...",link:it.link},"col-6")).join("");
-        addItems("Lab", combined, (it)=>it);
+        const labItems = (lab.items || []).slice(0, 5).map(i => intelligence({ title: i.title, link: i.link, date: i.pubDate, desc: stripHtml(i.description) }));
+        const toolItems = (ph.items || []).filter(i => /ai|agent|gpt|model|automation|llm/i.test(`${i.title} ${stripHtml(i.description)}`)).slice(0, 4)
+          .map(i => intelligence({ title: i.title, link: i.link, date: i.pubDate, desc: stripHtml(i.description) }));
+        const fundingItems = (funding.hits || []).filter(i => i.title).slice(0, 4)
+          .map(i => intelligence({ title: i.title, link: i.url || `https://news.ycombinator.com/item?id=${i.objectID}`, date: i.created_at, desc: `${i.points || 0} points / ${i.num_comments || 0} comments` }));
+
+        const combined = [...labItems, ...toolItems, ...fundingItems].sort((a, b) => b.score - a.score);
+
+        el("dailyIntel").innerHTML = combined.slice(0, 3).map(i => cardHTML(i, "Top Signal")).join("");
+        el("trendRadar").innerHTML = combined.slice(3, 7).map(i => cardHTML(i, "Trend Radar")).join("");
+        el("toolBoard").innerHTML = toolItems.map(i => cardHTML(i, "AI Tool")).join("");
+        el("fundingIntel").innerHTML = fundingItems.map(i => cardHTML(i, "Funding")).join("");
+
+        el("top3").innerHTML = combined.slice(0, 3).map(i => `<li><a href="${i.link}" target="_blank" rel="noopener">${i.title}</a><div class="meta">趋势评分 ${i.score} · ${i.businessImpact}</div></li>`).join("");
+
+        const now = new Date();
+        el("lastUpdated").textContent = `更新 ${now.toLocaleString("zh-CN", { hour12: false })}`;
+        el("sourceStatus").textContent = "已过滤低价值源，仅保留高信号";
       }
 
-      async function loadGitHubTrending() {
-        const data = await fetchJSON("https://ghapi.huchen.dev/repositories?language=&since=daily");
-        const ai = data.filter((r)=>/ai|llm|agent|gpt|model|diffusion/i.test(`${r.name} ${r.description||""}`)).slice(0,8);
-        el("ghTrending").innerHTML = ai.map((r)=>card({tag:"GitHub",title:r.name,meta:`${r.author} · ⭐ ${r.stars} · 今日 +${r.currentPeriodStars}`,text:r.description,link:r.url},"col-3")).join("");
-        addItems("GitHub", ai, (r)=>({source:"GitHub Trending AI", title:r.name, link:r.url, date:new Date().toISOString(), desc:r.description||""}));
-      }
-
-      async function loadProductHuntAI() {
-        const ph = await fetchRSS("https://www.producthunt.com/feed");
-        const ai = (ph.items || []).filter((it)=>/ai|gpt|agent|model|llm/i.test(`${it.title} ${stripHtml(it.description)}`)).slice(0,6);
-        el("productHunt").innerHTML = ai.map((it)=>card({tag:"Product Hunt",title:it.title,meta:fmtDate(it.pubDate),text:stripHtml(it.description).slice(0,110)+"...",link:it.link},"col-6")).join("");
-        addItems("PH", ai, (it)=>({source:"Product Hunt AI",title:it.title,link:it.link,date:it.pubDate,desc:stripHtml(it.description)}));
-      }
-
-      async function loadFunding() {
-        const data = await fetchJSON("https://hn.algolia.com/api/v1/search_by_date?query=AI%20startup%20raised%20series%20funding&tags=story&hitsPerPage=10");
-        el("fundingNews").innerHTML = data.hits.slice(0,6).map((h)=>card({tag:"Funding",title:h.title,meta:fmtDate(h.created_at),text:`${h.points||0} points · ${h.num_comments||0} comments`,link:h.url || `https://news.ycombinator.com/item?id=${h.objectID}`},"col-6")).join("");
-        addItems("Funding", data.hits, (h)=>({source:"AI Startup Funding",title:h.title,link:h.url || `https://news.ycombinator.com/item?id=${h.objectID}`,date:h.created_at,desc:`${h.points||0} points` }));
-      }
-
-      async function loadYouTubeAI() {
-        const feeds = ["https://www.youtube.com/feeds/videos.xml?channel_id=UCWv7vMbMWH4-V0ZXdmDpPBA", "https://www.youtube.com/feeds/videos.xml?channel_id=UCSHZKyawb77ixDdsGog4iWA"];
-        const list = (await Promise.all(feeds.map(fetchRSS))).flatMap((f)=>f.items||[]).sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate));
-        el("youtubeAI").innerHTML = list.slice(0,6).map((it)=>card({tag:"YouTube AI",title:it.title,meta:fmtDate(it.pubDate),text:it.author||"AI频道",link:it.link},"col-6")).join("");
-        addItems("YouTube", list, (it)=>({source:"YouTube AI频道",title:it.title,link:it.link,date:it.pubDate,desc:it.author||""}));
-      }
-
-      async function loadTwitterKOL() {
-        const xFeed = await fetchRSS("https://rsshub.app/twitter/user/sama");
-        const items = (xFeed.items || []).slice(0,6);
-        el("twitterKOL").innerHTML = items.map((it)=>card({tag:"X/Twitter",title:stripHtml(it.title).slice(0,52),meta:fmtDate(it.pubDate),text:stripHtml(it.description).slice(0,110)+"...",link:it.link},"col-6")).join("");
-        addItems("X", items, (it)=>({source:"X/Twitter AI KOL",title:stripHtml(it.title),link:it.link,date:it.pubDate,desc:stripHtml(it.description)}));
-      }
-
-      function buildSummary() {
-        const sorted = [...allFeedItems].filter(i=>i.title).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,20);
-        const what = sorted.slice(0,5).map(i=>`• ${i.source}：${i.title}`).join("<br>");
-        const why = "• 大模型厂商动态（OpenAI/Anthropic）影响产品方向。<br>• GitHub/Product Hunt 能看到工具化趋势和需求变化。<br>• 融资与KOL信号可辅助判断赛道热度。";
-        const opp = "• 普通人可做：AI效率工具代运营、垂类内容账号、企业Prompt模板服务。<br>• 开发者可做：围绕热门Repo做插件/模板/中文化二次产品。<br>• 创业者可做：追踪融资方向，优先验证高频痛点场景。";
-        el("autoSummary").innerHTML = [
-          card({tag:"发生了什么",title:"多源 AI 事件速览",meta:`样本 ${sorted.length} 条`,text:what,link:"#latest"},"col-4"),
-          card({tag:"为什么重要",title:"趋势影响解读",meta:"供决策参考",text:why,link:"#summary"},"col-4"),
-          card({tag:"普通人机会",title:"可执行机会清单",meta:"低门槛优先",text:opp,link:"#summary"},"col-4")
-        ].join("");
-      }
-
-      async function refreshAll() {
-        allFeedItems.length = 0;
-        el("status").textContent = "正在拉取 8 大实时数据源...";
-        try {
-          await Promise.all([loadLabsNews(), loadGitHubTrending(), loadProductHuntAI(), loadFunding(), loadYouTubeAI(), loadTwitterKOL()]);
-          const now = new Date();
-          buildSummary();
-          el("latestNews").innerHTML = [...allFeedItems].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,9).map((it)=>card({tag:it.source,title:it.title,meta:fmtDate(it.date),text:(it.desc||"").slice(0,100)+"...",link:it.link})).join("");
-          el("lastUpdated").textContent = `最后更新：${now.toLocaleString("zh-CN", { hour12: false })}`;
-          el("status").innerHTML = `✅ 已自动更新（每 10 分钟）<span class="refresh">下一次刷新：${new Date(now.getTime()+600000).toLocaleTimeString("zh-CN",{hour12:false})}</span>`;
-        } catch (e) {
-          el("status").textContent = `⚠️ 部分源加载失败：${e.message}`;
-        }
-      }
-
-      refreshAll();
-      setInterval(refreshAll, 10 * 60 * 1000);
+      refresh().catch((e) => {
+        el("sourceStatus").innerHTML = `<span class="danger">部分数据加载失败：${e.message}</span>`;
+      });
     </script>
   </body>
 </html>
