@@ -1,0 +1,26 @@
+{
+  "email_address": "your_qq_number@qq.com",
+  "auth_code": "your_imap_auth_code",
+  "check_interval_seconds": 60,
+  "folder": "INBOX",
+  "max_body_chars": 240,
+  "notify": true,
+  "notify_command": null,
+  "ignore_senders": [
+    "no-reply",
+    "noreply"
+  ],
+  "ignore_subject_keywords": [
+    "促销",
+    "广告",
+    "newsletter"
+  ],
+  "high_value_keywords": [
+    "验证码",
+    "账单",
+    "发票",
+    "面试",
+    "合同",
+    "订单"
+  ]
+}
